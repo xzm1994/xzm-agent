@@ -1,0 +1,43 @@
+spring:
+  application:
+    name: xzm-agent
+
+  ai:
+    openai:
+      api-key: sk-efdf84dd9c3b46008a4bf9567bf6 # deepseek官网生成api‑key
+      base-url: https://api.deepseek.com
+      chat:
+        options:
+          model: deepseek-v4-flash # 可选 deepseek‑reasoner(R1) / deepseek‑v3
+          temperature: 0.7
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/xzmagent?useUnicode=true&useSSL=false&serverTimezone=Asia/Shanghai
+    username: root
+    password: root
+mybatis‑plus:
+  configuration:
+    map-underscore-to-camel-case: true
+  mapper‑locations: classpath:mapper/**/*.xml
+
+server:
+  port: 8888
+  servlet:
+    context-path: /api
+# springdoc-openapi
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+    tags-sorter: alpha
+    operations-sorter: alpha
+  api-docs:
+    path: /v3/api-docs
+  group-configs:
+    - group: 'default'
+      paths-to-match: '/**'
+      packages-to-scan: com.yupi.yuaiagent.controller
+# knife4j
+knife4j:
+  enable: true
+  setting:
+    language: zh_cn
