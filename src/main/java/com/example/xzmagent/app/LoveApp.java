@@ -2,6 +2,8 @@ package com.example.xzmagent.app;
 
 import com.example.xzmagent.advises.MyLoggerAdvisor;
 import com.example.xzmagent.chatmemory.MyJdbcChatMemory;
+import com.example.xzmagent.tools.CostTools;
+import com.example.xzmagent.tools.WeatherTools;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.client.ChatClient;
@@ -11,11 +13,16 @@ import org.springframework.ai.chat.memory.ChatMemory;
 import org.springframework.ai.chat.memory.InMemoryChatMemory;
 import org.springframework.ai.chat.model.ChatResponse;
 import org.springframework.ai.openai.OpenAiChatModel;
+import org.springframework.ai.tool.ToolCallback;
+import org.springframework.ai.tool.definition.ToolDefinition;
+import org.springframework.ai.tool.method.MethodToolCallback;
 import org.springframework.ai.vectorstore.SearchRequest;
 import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
+import org.springframework.util.ReflectionUtils;
 
+import java.lang.reflect.Method;
 import java.util.List;
 
 import static org.springframework.ai.chat.client.advisor.AbstractChatMemoryAdvisor.CHAT_MEMORY_CONVERSATION_ID_KEY;
@@ -70,7 +77,7 @@ public class LoveApp {
 
 
     @Resource
-    private VectorStore pgVectorVectorStore;
+    private VectorStore loveAppVectorStore;
 
     public String doChatWithRag(String message, String chatId) {
         // 构建检索请求：设置相似度阈值 + topK
@@ -78,6 +85,15 @@ public class LoveApp {
                 .topK(4) // 返回top4条文档
                 .similarityThreshold(0.65d) // 过滤掉分数低于0.75的文档，提高相关性
                 .build();
+        Method method = ReflectionUtils.findMethod(CostTools.class, "getCost", String.class);
+        ToolCallback toolCallback = MethodToolCallback.builder()
+                .toolDefinition(ToolDefinition.builder(method)
+                        .description("获取指定商品的价格")
+                        .build())
+                .toolMethod(method)
+                .toolObject(new CostTools())
+                .build();
+
         ChatResponse chatResponse = chatClient
                 .prompt()
                 .user(message)
@@ -86,7 +102,9 @@ public class LoveApp {
                 // 开启日志，便于观察效果
                 .advisors(new MyLoggerAdvisor())
                 // 应用知识库问答
-                .advisors(new QuestionAnswerAdvisor(pgVectorVectorStore, searchRequest))
+                .advisors(new QuestionAnswerAdvisor(loveAppVectorStore, searchRequest))
+                .tools(new WeatherTools())
+                .tools(toolCallback)
                 .call()
                 .chatResponse();
         String content = chatResponse.getResult().getOutput().getText();
