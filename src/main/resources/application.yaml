@@ -1,15 +1,21 @@
 spring:
+  profiles:
+    active: dev
   application:
     name: xzm-agent
 
   ai:
     openai:
-      api-key: sk-efdf84dd9c3b46008a4bf9567bf6 # deepseek官网生成api‑key
       base-url: https://api.deepseek.com
       chat:
         options:
           model: deepseek-v4-flash # 可选 deepseek‑reasoner(R1) / deepseek‑v3
           temperature: 0.7
+      embedding:
+        model: deepseek-v4-flash
+        options:
+          model: deepseek-v4-flash
+
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost:3306/xzmagent?useUnicode=true&useSSL=false&serverTimezone=Asia/Shanghai
