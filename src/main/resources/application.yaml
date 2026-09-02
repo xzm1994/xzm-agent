@@ -17,10 +17,18 @@ spring:
           model: deepseek-v4-flash
 
   datasource:
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/xzmagent?useUnicode=true&useSSL=false&serverTimezone=Asia/Shanghai
-    username: root
-    password: root
+    # 主数据源 - MySQL
+    mysql:
+      driver-class-name: com.mysql.cj.jdbc.Driver
+      url: jdbc:mysql://localhost:3306/xzmagent?useUnicode=true&useSSL=false&serverTimezone=Asia/Shanghai
+      username: root
+      password: root
+    # 从数据源 - PostgreSQL
+    pg:
+      driver-class-name: org.postgresql.Driver
+      jdbc-url: jdbc:postgresql://pgm-bp196102bt46j0pnoo.pg.rds.aliyuncs.com/xzm-agent
+      username: xzm
+      password: Xiaomo1994
 mybatis‑plus:
   configuration:
     map-underscore-to-camel-case: true

@@ -4,20 +4,15 @@ package com.example.xzmagent.chatmemory;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.example.xzmagent.converter.MessageConverter;
 import com.example.xzmagent.domain.ChatHistoryDO;
-import com.example.xzmagent.repository.ChatHistoryMapper;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.example.xzmagent.repository.mysql.ChatHistoryMapper;
 import jakarta.annotation.Resource;
 import org.springframework.ai.chat.memory.ChatMemory;
-import org.springframework.ai.chat.messages.AssistantMessage;
 import org.springframework.ai.chat.messages.Message;
-import org.springframework.ai.chat.messages.UserMessage;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Component
 public class MyJdbcChatMemory implements ChatMemory {

@@ -1,11 +1,8 @@
-package com.example.xzmagent.repository;
+package com.example.xzmagent.repository.mysql;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.example.xzmagent.domain.ChatHistoryDO;
 import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Param;
-
-import java.util.List;
 
 /**
  * 对话历史Mapper
