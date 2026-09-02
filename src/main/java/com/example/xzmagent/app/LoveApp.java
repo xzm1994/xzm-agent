@@ -11,6 +11,7 @@ import org.springframework.ai.chat.memory.ChatMemory;
 import org.springframework.ai.chat.memory.InMemoryChatMemory;
 import org.springframework.ai.chat.model.ChatResponse;
 import org.springframework.ai.openai.OpenAiChatModel;
+import org.springframework.ai.vectorstore.SearchRequest;
 import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
@@ -69,9 +70,14 @@ public class LoveApp {
 
 
     @Resource
-    private VectorStore loveAppVectorStore;
+    private VectorStore pgVectorVectorStore;
 
     public String doChatWithRag(String message, String chatId) {
+        // 构建检索请求：设置相似度阈值 + topK
+        SearchRequest searchRequest = SearchRequest.builder()
+                .topK(4) // 返回top4条文档
+                .similarityThreshold(0.65d) // 过滤掉分数低于0.75的文档，提高相关性
+                .build();
         ChatResponse chatResponse = chatClient
                 .prompt()
                 .user(message)
@@ -80,7 +86,7 @@ public class LoveApp {
                 // 开启日志，便于观察效果
                 .advisors(new MyLoggerAdvisor())
                 // 应用知识库问答
-                .advisors(new QuestionAnswerAdvisor(loveAppVectorStore))
+                .advisors(new QuestionAnswerAdvisor(pgVectorVectorStore, searchRequest))
                 .call()
                 .chatResponse();
         String content = chatResponse.getResult().getOutput().getText();

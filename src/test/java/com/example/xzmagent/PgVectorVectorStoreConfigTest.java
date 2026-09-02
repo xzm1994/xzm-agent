@@ -12,21 +12,21 @@ import java.util.List;
 import java.util.Map;
 
 @SpringBootTest
-public class PgVectorVectorStoreConfigTest {
+class PgVectorVectorStoreConfigTest {
 
     @Resource
-    VectorStore pgVectorVectorStore;
+    private VectorStore pgVectorVectorStore;
 
     @Test
-    void test() {
+    void pgVectorVectorStore() {
         List<Document> documents = List.of(
-                new Document("Spring AI rocks!! Spring AI rocks!! Spring AI rocks!! Spring AI rocks!! Spring AI rocks!!", Map.of("meta1", "meta1")),
-                new Document("The World is Big and Salvation Lurks Around the Corner"),
-                new Document("You walk forward facing the past and you turn back toward the future.", Map.of("meta2", "meta2")));
+                new Document("鱼皮的编程导航有什么用？学编程啊，做项目啊", Map.of("meta1", "meta1")),
+                new Document("程序员鱼皮的原创项目教程 codefather.cn"),
+                new Document("鱼皮这小伙子比较帅气", Map.of("meta2", "meta2")));
         // 添加文档
         pgVectorVectorStore.add(documents);
         // 相似度查询
-        List<Document> results = pgVectorVectorStore.similaritySearch(SearchRequest.builder().query("Spring").topK(5).build());
+        List<Document> results = pgVectorVectorStore.similaritySearch(SearchRequest.builder().query("程鱼皮").topK(1).build());
         Assertions.assertNotNull(results);
     }
 }
