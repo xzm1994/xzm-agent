@@ -53,5 +53,10 @@ public class AiController {
         return xuManus.runASync(message);
     }
 
+    @GetMapping("/manus/chat/sync")
+    public String doChatWithManusBySync(String message) {
+        return xuManus.run(message);
+    }
+
 
 }
