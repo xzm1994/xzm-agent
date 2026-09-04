@@ -12,8 +12,10 @@ import org.springframework.ai.chat.client.advisor.QuestionAnswerAdvisor;
 import org.springframework.ai.chat.memory.ChatMemory;
 import org.springframework.ai.chat.memory.InMemoryChatMemory;
 import org.springframework.ai.chat.model.ChatResponse;
+import org.springframework.ai.model.function.FunctionCallback;
 import org.springframework.ai.openai.OpenAiChatModel;
 import org.springframework.ai.tool.ToolCallback;
+import org.springframework.ai.tool.ToolCallbackProvider;
 import org.springframework.ai.tool.definition.ToolDefinition;
 import org.springframework.ai.tool.method.MethodToolCallback;
 import org.springframework.ai.vectorstore.SearchRequest;
@@ -24,6 +26,7 @@ import org.springframework.util.ReflectionUtils;
 
 import java.lang.reflect.Method;
 import java.util.List;
+import java.util.Map;
 
 import static org.springframework.ai.chat.client.advisor.AbstractChatMemoryAdvisor.CHAT_MEMORY_CONVERSATION_ID_KEY;
 import static org.springframework.ai.chat.client.advisor.AbstractChatMemoryAdvisor.CHAT_MEMORY_RETRIEVE_SIZE_KEY;
@@ -125,6 +128,7 @@ public class LoveApp {
                 // 开启日志，便于观察效果
                 .advisors(new MyLoggerAdvisor())
                 .tools(allTools)
+                .toolContext(Map.of("userName", "xzm"))
                 .call()
                 .chatResponse();
         String content = response.getResult().getOutput().getText();
@@ -132,5 +136,34 @@ public class LoveApp {
         return content;
     }
 
+    @Resource
+    private ToolCallbackProvider toolCallbackProvider;
+
+    /**
+     * AI 恋爱报告功能（调用 MCP 服务）
+     *
+     * @param message
+     * @param chatId
+     * @return
+     */
+    public String doChatWithMcp(String message, String chatId) {
+        // ===== 临时诊断 =====
+        log.info("ToolCallbackProvider class: {}", toolCallbackProvider.getClass().getName());
+        for (FunctionCallback cb : toolCallbackProvider.getToolCallbacks()) {
+            log.info("  MCP tool loaded: {}", cb.getDescription());
+        }
+        ChatResponse chatResponse = chatClient
+                .prompt()
+                .user(message)
+                .advisors(spec -> spec.param(CHAT_MEMORY_CONVERSATION_ID_KEY, chatId))
+                // 开启日志，便于观察效果
+                .advisors(new MyLoggerAdvisor())
+                .tools(toolCallbackProvider)
+                .call()
+                .chatResponse();
+        String content = chatResponse.getResult().getOutput().getText();
+        log.info("content: {}", content);
+        return content;
+    }
 
 }

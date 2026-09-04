@@ -8,6 +8,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class XzmAgentApplication {
 
     public static void main(String[] args) {
+
         SpringApplication.run(XzmAgentApplication.class, args);
     }
 
