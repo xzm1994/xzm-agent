@@ -29,7 +29,7 @@ public abstract class BaseAgent {
     private int currentStep = 0;
 
     // LLm
-    private ChatClient  chatClient;
+    private ChatClient chatClient;
 
     // memory（想要自主维护绘画上下文）
     private List<Message> messageList = new ArrayList<>();
