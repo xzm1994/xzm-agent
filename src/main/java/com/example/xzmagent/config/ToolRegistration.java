@@ -21,15 +21,17 @@ public class ToolRegistration {
         ResourceDownloadTool resourceDownloadTool = new ResourceDownloadTool();
         TerminalOperationTool terminalOperationTool = new TerminalOperationTool();
         PDFGenerationTool pdfGenerationTool = new PDFGenerationTool();
-        WeatherTools  weatherTools = new WeatherTools();
+        WeatherTools weatherTools = new WeatherTools();
+        TerminateTool terminateTool = new TerminateTool();
         return ToolCallbacks.from(
-            fileOperationTool,
-            webSearchTool,
-            webScrapingTool,
-            resourceDownloadTool,
-            terminalOperationTool,
-            weatherTools,
-            pdfGenerationTool
+                fileOperationTool,
+                webSearchTool,
+                webScrapingTool,
+                resourceDownloadTool,
+                terminalOperationTool,
+                weatherTools,
+                terminateTool,
+                pdfGenerationTool
         );
     }
 }
