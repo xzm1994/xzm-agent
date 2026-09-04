@@ -23,6 +23,7 @@ import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ReflectionUtils;
+import reactor.core.publisher.Flux;
 
 import java.lang.reflect.Method;
 import java.util.List;
@@ -48,12 +49,13 @@ public class LoveApp {
                         new MyLoggerAdvisor())
                 .build();
     }
+
     public String doChat(String message, String chatId) {
         ChatResponse response = chatClient
                 .prompt()
                 .user(message)
                 .advisors(spec -> spec.param(CHAT_MEMORY_CONVERSATION_ID_KEY, chatId)
-                        .param(CHAT_MEMORY_RETRIEVE_SIZE_KEY, 1))
+                        .param(CHAT_MEMORY_RETRIEVE_SIZE_KEY, 10))
                 .call()
                 .chatResponse();
         String content = response.getResult().getOutput().getText();
@@ -136,8 +138,8 @@ public class LoveApp {
         return content;
     }
 
-    @Resource
-    private ToolCallbackProvider toolCallbackProvider;
+//    @Resource
+//    private ToolCallbackProvider toolCallbackProvider;
 
     /**
      * AI 恋爱报告功能（调用 MCP 服务）
@@ -146,24 +148,41 @@ public class LoveApp {
      * @param chatId
      * @return
      */
-    public String doChatWithMcp(String message, String chatId) {
-        // ===== 临时诊断 =====
-        log.info("ToolCallbackProvider class: {}", toolCallbackProvider.getClass().getName());
-        for (FunctionCallback cb : toolCallbackProvider.getToolCallbacks()) {
-            log.info("  MCP tool loaded: {}", cb.getDescription());
-        }
-        ChatResponse chatResponse = chatClient
+//    public String doChatWithMcp(String message, String chatId) {
+//        // ===== 临时诊断 =====
+//        log.info("ToolCallbackProvider class: {}", toolCallbackProvider.getClass().getName());
+//        for (FunctionCallback cb : toolCallbackProvider.getToolCallbacks()) {
+//            log.info("  MCP tool loaded: {}", cb.getDescription());
+//        }
+//        ChatResponse chatResponse = chatClient
+//                .prompt()
+//                .user(message)
+//                .advisors(spec -> spec.param(CHAT_MEMORY_CONVERSATION_ID_KEY, chatId))
+//                // 开启日志，便于观察效果
+//                .advisors(new MyLoggerAdvisor())
+//                .tools(toolCallbackProvider)
+//                .call()
+//                .chatResponse();
+//        String content = chatResponse.getResult().getOutput().getText();
+//        log.info("content: {}", content);
+//        return content;
+//    }
+
+    /**
+     * 流式输出调用
+     * @param message 消息
+     * @param chatId 会话ID
+     * @return 流式id
+     */
+    public Flux<String> doChatByStream(String message, String chatId) {
+        return chatClient
                 .prompt()
                 .user(message)
-                .advisors(spec -> spec.param(CHAT_MEMORY_CONVERSATION_ID_KEY, chatId))
-                // 开启日志，便于观察效果
-                .advisors(new MyLoggerAdvisor())
-                .tools(toolCallbackProvider)
-                .call()
-                .chatResponse();
-        String content = chatResponse.getResult().getOutput().getText();
-        log.info("content: {}", content);
-        return content;
+                .advisors(spec -> spec.param(CHAT_MEMORY_CONVERSATION_ID_KEY, chatId)
+                        .param(CHAT_MEMORY_RETRIEVE_SIZE_KEY, 10))
+                .stream()
+                .content();
     }
+
 
 }
